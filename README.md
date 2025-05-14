@@ -1,129 +1,148 @@
-## README.md
+# SEO Auto‑Publisher
 
-Welcome to **AI-SEO-Blog**! This tool automates end-to-end SEO blog creation: scraping trending products, researching keywords, generating AI-powered posts, and publishing to WordPress.com.
-
-### 🚀 Quick Start
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/yourusername/ai-seo-blog.git
-   cd ai-seo-blog
-   ```
-2. **Create and configure your `.env`**:
-   ```env
-   # eBay API
-   EBAY_USE_SANDBOX=false
-   EBAY_APP_ID=your_production_app_id
-   EBAY_SANDBOX_APP_ID=your_sandbox_app_id
-
-   # Hugging Face (optional)
-   HF_TOKEN=hf_your_token_here
-
-   # WordPress.com
-   WORDPRESS_SITE=yourblog.wordpress.com
-   WP_COM_TOKEN=your_oauth2_access_token
-   ```
-3. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
-4. **Run the pipeline**:
-   ```bash
-   python main.py
-   ```
-
-### 📂 Project Structure
-```
-ai_seo_blog/
-├── .env
-├── README.md
-├── requirements.txt
-├── main.py            # Orchestrator
-├── scrapers/
-│   └── ebay_scraper.py
-├── seo/
-│   └── keyword_research.py
-├── generator/
-│   └── blog_generator.py
-└── poster/
-    └── wordpress_poster.py
-```
-
-### 🔍 Screenshots / Images
-- **Scraper Logs**: `![Scraper Logs](/images/scraper_logs.png)`
-- **Keyword Output**: `![Keywords](/images/keywords.png)`
-- **Blog Generation**: `![Generated Blog](/images/blog_generation.png)`
-- **Published Post**: `![Published Post](/images/published_post.png)`
-
-### 📖 Usage Examples
-- **Scrape & Post**:
-  ```bash
-  python main.py
-  # Output:
-  # [Main] Processing: Apple iPhone 13...
-  # [SEO] Keywords: [...]
-  # [Gen] Generated 158 words
-  # [Poster] Published at https://yourblog.wordpress.com/.../
-  ```
-
-### 🤝 Contributing
-Feel free to open issues or pull requests. For major changes, please start a discussion.
+A fully automated pipeline that scrapes top‑watched eBay products, generates SEO‑optimized blog paragraphs via Mistral‑7B, and publishes them to your WordPress site every day at 9 UTC.
 
 ---
 
-## report.md
+## 🚀 Features
 
-# Project Report: AI-Driven SEO Blog Automation
+- **eBay Scraping**: Fetch the top 5 most‑watched items on eBay (sandbox or production).  
+- **Keyword Research**: Generate 4 SEO‑focused keywords per product using an instruction‑tuned LLM.  
+- **Blog Generation**: Write a single 150–200 word engaging paragraph, naturally including your keywords, and ending with a call to action.  
+- **WordPress Publishing**: Post directly to WordPress via the modern v2 JSON REST API.  
+- **Scheduled Runs**: GitHub Actions workflow triggers every day at 9:00 UTC.  
 
-## 1. Introduction
-This report details the development of an automated pipeline for creating and publishing SEO-optimized blog posts using AI and free APIs.
+---
 
-## 2. System Overview
-1. **Trending Products**: Fetched top-watched items from eBay Merchandising API.
-2. **SEO Keywords**: Generated keywords using Hugging Face Inference API (Mistral-7B-Instruct-v0.3).
-3. **Content Generation**: Produced 150–200 word blog posts with a strong call to action using the same LLM.
-4. **Publishing**: Posted articles to WordPress.com via REST API v1.1.
+## 📁 Repository Structure
 
-## 3. Detailed Steps
+```
 
-### 3.1 Environment Setup
-- Installed Python 3.10+
-- Created `.env` with API credentials
-- Installed dependencies in `requirements.txt`.
+seo-auto-publisher/
+├── .github/
+│   └── workflows/
+│       └── schedule.yml          # Daily GitHub Actions pipeline
+├── generator/
+│   └── blog\_generator.py         # Blog paragraph generation
+├── poster/
+│   └── wordpress\_poster.py       # JSON‑based WordPress poster
+├── scrapers/
+│   └── ebay\_scraper.py           # eBay “most watched” scraper
+├── seo/
+│   └── keyword\_research.py       # SEO keyword suggester
+├── main.py                       # Orchestrator script
+├── requirements.txt              # Python dependencies
+└── README.md                     # This file
 
-### 3.2 Scraping Module (`ebay_scraper.py`)
-- Utilized `ebaysdk.merchandising.Connection` to call `getMostWatchedItems`.
-- Parsed response to extract product titles and URLs.
+````
 
-### 3.3 Keyword Research (`keyword_research.py`)
-- Initialized `InferenceClient` with optional `HF_TOKEN`.
-- Prompted model to suggest 4 SEO keywords per product.
+---
 
-### 3.4 Blog Generation (`blog_generator.py`)
-- Used Mistral-7B-Instruct to produce a single paragraph (150–200 words).
-- Enforced no repetition, no lists, and included a CTA.
-- Implemented retry/backoff on 503 errors.
-- Trimmed incomplete trailing sentences via `str.rfind()`.
+## 🔧 Prerequisites
 
-### 3.5 Posting to WordPress (`wordpress_poster.py`)
-- Loaded OAuth2 token from `.env`.
-- Posted via `https://public-api.wordpress.com/rest/v1.1/sites/{SITE}/posts/new`.
-- Logged full response and extracted the published URL.
+- Python 3.10+  
+- A WordPress.com (or Jetpack‑connected) site  
+- eBay Developer account (sandbox & production App IDs)  
+- Hugging Face account with an API token  
 
-## 4. Results
-- **Total Products Processed**: 5 per run
-- **Average Generation Time**: ~4 seconds per post
-- **Success Rate**: 100% publishing success on test runs
-- **Sample Posts**:
-  - https://yourblog.wordpress.com/2025/04/29/product-1-slug/
-  - https://yourblog.wordpress.com/2025/04/29/product-2-slug/
+---
 
-## 5. Future Work
-- Add media uploads (product images) via WordPress API.
-- Integrate Google Search Console for performance tracking.
-- Deploy as a scheduled AWS Lambda or GitHub Action.
+## ⚙️ Configuration
 
-## 6. Appendices
-- **Appendix A**: Sample `.env` file
-- **Appendix B**: Full prompt templates
+1. **Clone the repo**  
+   ```bash
+   git clone https://github.com/your‑username/seo‑auto‑publisher.git
+   cd seo-auto-publisher
+````
 
+2. **Create & fill `.env`**
+   Copy `.env.example` to `.env` and set each value:
+
+   ```ini
+   HF_TOKEN=hf_xxxYourHfTokenxxx
+   EBAY_APP_ID=your_ebay_prod_app_id
+   EBAY_SANDBOX_APP_ID=your_ebay_sandbox_app_id
+   EBAY_USE_SANDBOX=false
+   WORDPRESS_SITE=yourblog.wordpress.com
+   WP_COM_TOKEN=your_wp_oauth_token
+   ```
+
+3. **Install dependencies**
+
+   ```bash
+   python3 -m venv env
+   source env/bin/activate        # Linux/macOS
+   .\env\Scripts\activate         # Windows
+   pip install -r requirements.txt
+   ```
+
+---
+
+## ▶️ Running Locally
+
+```bash
+python main.py
+```
+
+You’ll see console logs like:
+
+```
+[Main] Processing: Apple iPhone 13 A2482 128GB Network Unlocked Very Good Condition
+[SEO] Keywords: ['iPhone 13 Unlocked', 'Apple iPhone 128GB', 'A2482 Refurbished', 'High Quality Unlocked iPhone']
+[Gen] Generated 110 words
+[Main] Published: https://seoblogtool5.wordpress.com/2025/05/15/apple-iphone-13-a2482-128gb-network-unlocked-very-good-condition/
+```
+
+---
+
+## 🎯 Live Demo & Sample Output URLs
+
+Check out the actual published posts on our demo site:
+
+* [Apple iPhone 13 A2482 128GB Network Unlocked Very Good Condition](https://seoblogtool5.wordpress.com/2025/05/14/apple-iphone-13-a2482-128gb-network-unlocked-very-good-condition-4/)
+* [Apple iPhone 6s-16GB 64GB 128GB GSM “Factory Unlocked” AND AT\&T Good Condition](https://seoblogtool5.wordpress.com/2025/05/14/apple-iphone-6s-16gb-64gb-128gb-gsm-factory-unlocked-and-att-good-condition-4/)
+* [Apple iPhone 6 Plus-16GB 64GB GSM Factory Unlocked all colors Good Condition](https://seoblogtool5.wordpress.com/2025/05/14/apple-iphone-6-plus-16gb-64gb-gsm-factory-unlocked-all-colors-good-condition-3/)
+* [Samsung Galaxy S21 5G 128GB G991U Unlocked - Good](https://seoblogtool5.wordpress.com/2025/05/14/samsung-galaxy-s21-5g-128gb-g991u-unlocked-good-3/)
+
+---
+
+## 📦 Deployment with GitHub Actions
+
+1. **Push your code** to GitHub.
+2. **Add secrets** in your repo’s Settings → Secrets:
+
+   * `HF_TOKEN`
+   * `EBAY_APP_ID`
+   * `EBAY_SANDBOX_APP_ID`
+   * `WORDPRESS_SITE`
+   * `WP_COM_TOKEN`
+3. The workflow at `.github/workflows/schedule.yml` will run daily at 9:00 UTC and publish new posts automatically.
+
+---
+
+## 🧪 Testing
+
+*(Optional)* Add pytest tests in a `/tests` folder to mock:
+
+* eBay SDK responses
+* Hugging Face LLM calls
+* WordPress API calls
+
+Run:
+
+```bash
+pytest --maxfail=1 --disable-warnings -q
+```
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repo
+2. Create a feature branch (`git checkout -b feat/my-feature`)
+3. Commit your changes (`git commit -m 'Add feature'`)
+4. Push (`git push origin feat/my-feature`)
+5. Open a Pull Request
+
+---
 
