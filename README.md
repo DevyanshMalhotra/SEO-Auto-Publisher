@@ -53,7 +53,7 @@ seo-auto-publisher/
    ```bash
    git clone https://github.com/your‑username/seo‑auto‑publisher.git
    cd seo-auto-publisher
-````
+
 
 2. **Create & fill `.env`**
    Copy `.env.example` to `.env` and set each value:
